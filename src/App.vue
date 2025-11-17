@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch, provide } from "vue";
+import { onMounted, reactive, ref, watch, provide, computed } from "vue";
 import axios from "axios";
 import Header from "./components/Header.vue";
 import CardList from "./components/CardList.vue";
@@ -67,6 +67,18 @@ watch(filters, async () => {
   }
 });
 
+const filteredItems = computed(() => {
+  const searchLower = filters.searchQuery.toLowerCase().trim();
+
+  if (!searchLower) {
+    return items.value;
+  }
+
+  return items.value.filter((item) =>
+    item.title?.toLowerCase().includes(searchLower)
+  );
+});
+
 const addToFavorite = (item) => {
   item.isFavorite = true;
   console.log("Added to Favorites:", item);
@@ -118,7 +130,7 @@ provide("addToFavorite", addToFavorite);
 
     <!-- CARD LIST -->
     <div class="mt-10 px-10">
-      <CardList :items="items" />
+      <CardList :items="filteredItems" />
     </div>
   </div>
 </template>
